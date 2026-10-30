@@ -27,6 +27,7 @@ Read these in order:
 2. [docs/HOW-TO.md](docs/HOW-TO.md): how to use the agent and each skill, day to day.
 3. [docs/MCP-SETUP.md](docs/MCP-SETUP.md): connect Linear, Granola, Slack and Google Drive.
 4. [docs/ADAPTING.md](docs/ADAPTING.md): change the team keys, workflow statuses, house rules and templates to fit your own team.
+5. [docs/OBSIDIAN-MCP.md](docs/OBSIDIAN-MCP.md): optional. Let Claude Desktop read and write your vault through Obsidian. The skills do not need it.
 
 ## Where everything is
 

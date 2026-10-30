@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 - 30 Oct 2026
+
+- `docs/OBSIDIAN-MCP.md`: connecting Claude Desktop to an Obsidian vault with the Local REST API plugin, for macOS and Windows, with a safety section. Optional: the skills do not need it.
+
 ## 0.1.1 - 30 Oct 2026
 
 - `docs/OBSIDIAN-SETUP.md`: setting up an Obsidian vault, installing the package and writing notes the skills can use.

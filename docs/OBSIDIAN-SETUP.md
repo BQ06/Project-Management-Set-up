@@ -86,6 +86,10 @@ Obsidian and Claude Code can be open on the same vault at the same time. A note 
 
 If you edit a note while a skill is running, finish before you ask it to write, so it does not draft against an old version.
 
+## Optional: let Claude Desktop reach the vault through Obsidian
+
+The skills do not need this. If you also want Claude Desktop to search and create notes in the vault, see [OBSIDIAN-MCP.md](OBSIDIAN-MCP.md).
+
 ## Keeping it safe
 
 - **Back up the vault.** It is plain files, so Time Machine, a cloud folder or a private Git repo all work.
