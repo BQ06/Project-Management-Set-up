@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Install the agents and skills into a vault (an Obsidian folder that holds your project notes).
 
-Usage: install.py VAULT_PATH [--force]
+Usage: install.py VAULT_PATH [--force] [--with-starter]
 Copies the managed files into the vault. An existing file is left alone unless --force is given.
 project-map.md, settings.local.json and CLAUDE.md are created from the examples only if missing,
 and are never overwritten, even with --force: they hold your own project data.
+--with-starter also creates an ExampleProject folder of starter notes, if the vault has no such folder.
 """
 import argparse
 import os
@@ -17,7 +18,7 @@ import common  # noqa: E402
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 
-def install(vault, force=False, repo=REPO):
+def install(vault, force=False, repo=REPO, starter=False):
     """Return (copied, skipped, created)."""
     if not os.path.isdir(vault):
         raise SystemExit("vault folder not found: %s" % vault)
@@ -38,6 +39,14 @@ def install(vault, force=False, repo=REPO):
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         shutil.copyfile(src, dest)
         created.append(target)
+    if starter:
+        src_dir = os.path.join(repo, "starter", "ExampleProject")
+        dest_dir = os.path.join(vault, "ExampleProject")
+        if os.path.isdir(src_dir) and not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+            for name in sorted(os.listdir(src_dir)):
+                shutil.copyfile(os.path.join(src_dir, name), os.path.join(dest_dir, name))
+                created.append("ExampleProject/" + name)
     return copied, skipped, created
 
 
@@ -45,8 +54,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("vault")
     ap.add_argument("--force", action="store_true", help="overwrite existing agent, skill, rule, script and template files")
+    ap.add_argument("--with-starter", action="store_true", help="also create an ExampleProject folder of starter notes")
     args = ap.parse_args()
-    copied, skipped, created = install(os.path.abspath(args.vault), args.force)
+    copied, skipped, created = install(os.path.abspath(args.vault), args.force, starter=args.with_starter)
     print("Copied %d files, left %d existing files alone." % (len(copied), len(skipped)))
     for rel in created:
         print("Created %s from the example. Edit it for your projects." % rel)

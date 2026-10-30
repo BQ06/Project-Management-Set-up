@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 30 Oct 2026
+
+- `docs/OBSIDIAN-SETUP.md`: setting up an Obsidian vault, installing the package and writing notes the skills can use.
+- `starter/ExampleProject/`: three starter notes, created by `install.py --with-starter`.
+- README: a "Where everything is" table, including why the skills are in the hidden `.claude` folder.
+
 ## 0.1.0 - 30 Oct 2026
 
 First packaged release.

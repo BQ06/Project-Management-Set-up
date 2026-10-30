@@ -111,6 +111,22 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(sorted(created), [".claude/pm-config.json", ".claude/project-map.md", ".claude/settings.local.json", "CLAUDE.md"])
         self.assertEqual(skipped, [])
 
+    def test_starter_notes_are_created_only_when_asked_and_never_overwritten(self):
+        repo = self.make_repo()
+        for name in ("Overview.md", "Scope Boundaries.md", "Open Questions.md"):
+            helpers.write(repo, "starter/ExampleProject/" + name, "# " + name)
+        vault = tempfile.mkdtemp()
+        _c, _s, created = install.install(vault, repo=repo)
+        self.assertFalse(os.path.exists(os.path.join(vault, "ExampleProject")))
+        vault2 = tempfile.mkdtemp()
+        _c, _s, created = install.install(vault2, repo=repo, starter=True)
+        self.assertIn("ExampleProject/Overview.md", created)
+        self.assertTrue(os.path.isfile(os.path.join(vault2, "ExampleProject", "Scope Boundaries.md")))
+        helpers.write(vault2, "ExampleProject/Overview.md", "mine")
+        install.install(vault2, repo=repo, starter=True)
+        with open(os.path.join(vault2, "ExampleProject", "Overview.md")) as fh:
+            self.assertEqual(fh.read(), "mine")
+
     def test_never_overwrites_existing_files(self):
         repo, vault = self.make_repo(), tempfile.mkdtemp()
         helpers.write(vault, ".claude/skills/demo/SKILL.md", "mine")

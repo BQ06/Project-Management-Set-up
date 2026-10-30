@@ -18,13 +18,30 @@ This repo holds the agents and skills only. It does not hold any project notes, 
 | Templates | standard, epic and design ticket templates, enforced by the ticket checker |
 | Config | `pm-config.json` (your Linear team keys), `project-map.md` (your projects), `settings.local.json` (permissions) |
 | Scripts | the ticket checker, the changed-notes finder and the digest window, with 76 tests |
-| Tools | installer, setup checker (`doctor`), skills linter, secret scanner, vault exporter, MCP name rewriter, with 59 tests |
+| Starter notes | `starter/ExampleProject/`: an Overview, Scope Boundaries and Open Questions note to copy for a first project |
+| Tools | installer, setup checker (`doctor`), skills linter, secret scanner, vault exporter, MCP name rewriter, with 60 tests |
 
 Read these in order:
 
-1. [docs/HOW-TO.md](docs/HOW-TO.md): how to use the agent and each skill, day to day.
-2. [docs/MCP-SETUP.md](docs/MCP-SETUP.md): connect Linear, Granola, Slack and Google Drive.
-3. [docs/ADAPTING.md](docs/ADAPTING.md): change the team keys, workflow statuses, house rules and templates to fit your own team.
+1. [docs/OBSIDIAN-SETUP.md](docs/OBSIDIAN-SETUP.md): start here if you have no vault yet. Set up Obsidian, install this, and write notes the skills can use.
+2. [docs/HOW-TO.md](docs/HOW-TO.md): how to use the agent and each skill, day to day.
+3. [docs/MCP-SETUP.md](docs/MCP-SETUP.md): connect Linear, Granola, Slack and Google Drive.
+4. [docs/ADAPTING.md](docs/ADAPTING.md): change the team keys, workflow statuses, house rules and templates to fit your own team.
+
+## Where everything is
+
+The agent and skills sit in a folder whose name starts with a dot, `.claude`. Finder hides such folders (press Cmd+Shift+. to show them), and GitHub shows them normally. Claude Code only looks for agents and skills in that exact place, so the folder cannot be renamed or moved.
+
+| What | Where |
+|---|---|
+| The agent | [`.claude/agents/project-manager.md`](.claude/agents/project-manager.md) |
+| The skills (one folder each, with a `SKILL.md`) | [`.claude/skills/`](.claude/skills/) |
+| Ticket rules and house rules | [`.claude/reference/`](.claude/reference/) |
+| Scripts and their tests | [`.claude/scripts/`](.claude/scripts/) |
+| Ticket templates | [`Templates/Tickets/`](Templates/Tickets/) |
+| Examples to copy (project map, settings, config, `CLAUDE.md`) | [`.claude/`](.claude/) and the repo root, files named `*.example.*` |
+| Starter notes for a first project | [`starter/ExampleProject/`](starter/ExampleProject/) |
+| Installer, setup checker, linter, scanner, exporter | [`tools/`](tools/) |
 
 ## Prerequisites
 
@@ -38,10 +55,10 @@ Read these in order:
 
 ```bash
 git clone <this repo> pm-agents-skills
-python3 pm-agents-skills/tools/install.py /path/to/your/vault
+python3 pm-agents-skills/tools/install.py /path/to/your/vault --with-starter
 ```
 
-The installer copies the agent, skills, rules, scripts and templates into your vault. It never overwrites a file you already have, and it creates four files from the examples only if they are missing: `.claude/project-map.md`, `.claude/pm-config.json`, `.claude/settings.local.json` and `CLAUDE.md`.
+The installer copies the agent, skills, rules, scripts and templates into your vault. `--with-starter` also creates an `ExampleProject` folder of three starter notes. It never overwrites a file you already have, and it creates four files from the examples only if they are missing: `.claude/project-map.md`, `.claude/pm-config.json`, `.claude/settings.local.json` and `CLAUDE.md`.
 
 Then:
 
