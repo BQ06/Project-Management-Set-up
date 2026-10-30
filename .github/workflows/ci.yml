@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Ticket check, note change and digest window tests
+        run: python -m unittest discover -s .claude/scripts -p "test_*.py"
+      - name: Tooling tests
+        run: python -m unittest discover -s tools/tests
+      - name: Lint the agents and skills
+        run: python tools/lint_skills.py
+      - name: Scan for secrets, personal paths and real IDs
+        run: python tools/scan_secrets.py

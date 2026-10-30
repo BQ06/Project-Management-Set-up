@@ -1,0 +1,26 @@
+# Your own project data stays in your vault, never in this repo
+.claude/project-map.md
+.claude/settings.local.json
+.claude/pm-config.json
+.claude/export-map.json
+.claude/state/
+.claude/plans/
+CLAUDE.md
+
+# Anything that looks like a credential or a vault export
+*.zip
+.env
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.db
+*credential*
+*Credential*
+*password*
+
+# Machine files
+.DS_Store
+__pycache__/
+*.pyc
