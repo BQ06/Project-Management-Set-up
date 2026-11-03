@@ -15,6 +15,8 @@ Read first: `.claude/project-map.md`, `.claude/reference/ticket-rules.md` (inclu
 ## Golden rule
 Never touch a ticket in Done or QA (see `ticket-rules.md`). After `get_issue` in step 1, if the status is Done or QA, stop and say so. Do not link, relate or reparent anything to a Done or QA ticket either.
 
+Only the PM's own tickets are edited (Ownership rule in `ticket-rules.md`). After `get_issue` in step 1, also read `createdBy`. If the ticket was created by someone else, stop and say so: no edit, comment, status change or cancelling. Report any conflict with one of the PM's tickets to the PM, whose own ticket gives way.
+
 ## Rule of this skill
 The ticket is rewritten WHOLE in its template. Nothing is pasted on top of an outdated spec and nothing is appended. No "Update 21 Oct" lines, no "RESOLVED" notes, no TBC.
 

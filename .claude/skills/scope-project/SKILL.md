@@ -18,6 +18,8 @@ Before placing any ticket in a phase, cross-reference Done, QA and Backlog/To-do
 ## Golden rule
 Never touch a ticket in Done or QA (see `ticket-rules.md`). Phase labels, re-statusing and any other write skip them, even when their phase label looks wrong: list them in the proposal as "flagged, not changed".
 
+Only the PM's own tickets are edited (Ownership rule in `ticket-rules.md`). Read `createdBy` on every ticket before a label or status write. Tickets created by someone else are skipped and listed as "flagged, not changed".
+
 ## Two modes
 - **new** (before build): inputs are requirements only: a draft contract, SoW, client brief, or the user's notes. No tickets, labels or drift exist. Do not read Linear tickets except to confirm there are none.
 - **replan** (during build): adds Linear (tickets, statuses, phase labels) and the newest dated notes, and checks the plan against them.

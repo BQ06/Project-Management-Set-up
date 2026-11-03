@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 - 3 Nov 2026
+
+- New ownership rule in `ticket-rules.md`: only tickets created by the PM may be edited, commented on, re-statused, linked or cancelled. Every skill and the `project-manager` agent read `createdBy` first, leave other people's tickets alone, and report conflicts to the PM, whose own ticket gives way.
+- `/new-ticket`, `/update-ticket`, `/tickets-from-updates` and `/scope-project` carry the rule. The agent shows each ticket's creator in its tables and marks other people's tickets "flag only".
+
 ## 0.1.2 - 30 Oct 2026
 
 - `docs/OBSIDIAN-MCP.md`: connecting Claude Desktop to an Obsidian vault with the Local REST API plugin, for macOS and Windows, with a safety section. Optional: the skills do not need it.

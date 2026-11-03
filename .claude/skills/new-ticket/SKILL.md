@@ -15,6 +15,8 @@ Read these first: `.claude/project-map.md`, `.claude/reference/ticket-rules.md` 
 ## Golden rule
 Never touch a ticket in Done or QA (see `ticket-rules.md`). Do not set a Done or QA ticket as the parent, and do not add a relation to one. If the conflict check finds that a Done or QA ticket already covers the outcome, say so and stop; nothing is created or linked.
 
+Only the PM's own tickets are edited (Ownership rule in `ticket-rules.md`). Read `createdBy` on any existing ticket the conflict check turns up. A ticket created by someone else is read-only: do not edit, comment on, relate or reparent it. Report the overlap to the PM, who decides whether the new ticket is still needed.
+
 ## Steps
 1. **Project.** Work it out from the argument or the description. If it is genuinely unclear, ask one question. If Linear is not connected, stop and say so.
 2. **Template.** Choose Standard, Epic or Design (UX design work for the Design Team, title `[DESIGN] - <what>`) using the rules in `ticket-rules.md`. Say which and why in one line. If unsure, ask one question. For an epic, also propose its child standard tickets (titles only) and say they would be sub-issues. Create the epic only; children are drafted one at a time afterwards.

@@ -15,6 +15,8 @@ Read first: `.claude/project-map.md`, `.claude/reference/ticket-rules.md` (inclu
 ## Golden rule
 Never touch a ticket in Done or QA (see `ticket-rules.md`). Do not link, relate or reparent new tickets to a Done or QA ticket. If a Done or QA ticket already covers a change, report it and propose nothing.
 
+Only the PM's own tickets are edited (Ownership rule in `ticket-rules.md`). Never propose a change to a ticket created by someone else. Read `createdBy` on any existing ticket that overlaps a change and report it to the PM as "flag only".
+
 ## Steps
 1. **Find what changed.** For each project run `python3 .claude/scripts/changed_notes.py --project "<folder>"` (add `--since <window>` if a window was given). The script is read-only and ignores digest folders, folder `CLAUDE.md` files and sensitive notes. Without `--since` it compares content hashes against the recorded baseline, so touched-but-unedited notes are skipped. With `--since` it simply lists notes modified in that window (no hash comparison), so state which mode you used. Undecided items in the notes are skipped, not proposed. If it prints `NO BASELINE`, ask the user whether to use a window (`--since`) or record today's state as the baseline (`--record`, which writes only `.claude/state/last-processed.json`). Never flood the run with every note.
 2. **Read only the changed notes**, plus the project's start notes and the newest dated notes for context. Note when a changed note supersedes an older one.
