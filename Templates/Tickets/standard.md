@@ -1,35 +1,27 @@
-## [Ticket Title]
+## [Plain title: what the user can do, or what changes for them]
 
 **Business context**
 
-[Why this matters to customers or the business, in plain words. One sentence is enough for a small change; a larger change can use a little more, never more than 6.]
+[Who it is for, what they need, and why. One or two short, plain sentences.]
 
-**Expected behaviour**
+**Requirements**
 
-[What the customer, agent or admin sees and does once this is done. Short, plain sentences anyone on the team can read in a minute. The outcome, not how it's built. No jargon, no filler, no repeating the context.]
+- [ ] [Something a user can see or do]
+- [ ] [What happens when it goes wrong or they go off the usual path]
 
-**Acceptance criteria**
+**Design**
 
-- [ ] [What the user sees or can do]
-- [ ] [Edge case: what happens when...]
-- [ ] [Must NOT: what the user must not be able to do or see]
+[Link to the prototype, wireframe or screen, or "None".]
 
 **Dependencies**
 
-- Blocked by: [decision, ticket, or person or partner we are waiting on]
-- Blocks: [ticket link]
-- External: [partner, client or supplier]
+- Blocked by: [Open tickets that must finish first, linked in Linear, or "N/A"]
+- Waiting on: [Open client or partner decisions, who is chasing and the date asked, or "N/A". Anything listed here keeps the ticket in Backlog.]
+
+**Open questions**
+
+- [Genuine questions for dev, or "None as of <date>"]
 
 **[Optional] Credentials**
 
 [Only if this ticket needs them: the environment, URL, keys or tokens dev needs, and who owns them. Leave this section out when it does not apply.]
-
-**Potential impacts**
-
-- Who is affected: [customers, agents, admins, partners]
-- Related areas of the product: [journeys, pages, reports touched]
-- Rollback / risk: [what customers would see if this goes wrong]
-
-**Open questions**
-
-- [Genuine unresolved question for dev, or None]

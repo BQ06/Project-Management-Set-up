@@ -12,7 +12,7 @@ import sys
 
 BUILTIN_TOOLS = {
     "Read", "Grep", "Glob", "Edit", "Write", "MultiEdit", "NotebookEdit", "Bash",
-    "WebFetch", "WebSearch", "Agent", "Task", "Skill", "TodoWrite",
+    "WebFetch", "WebSearch", "Agent", "Task", "Skill", "TodoWrite", "AskUserQuestion",
 }
 # Verbs that change something outside the session. A skill may not pre-approve these:
 # the permission prompt is the second gate before any write.

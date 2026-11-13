@@ -8,6 +8,7 @@ MANAGED = [
     (".claude/skills", lambda rel: rel.endswith("/SKILL.md") and rel.count("/") == 3),
     (".claude/reference", lambda rel: rel.endswith(".md") and rel.count("/") == 2),
     (".claude/scripts", lambda rel: rel.endswith(".py") and rel.count("/") == 2),
+    (".claude/scripts/legacy_templates", lambda rel: rel.endswith(".md") and rel.count("/") == 3),
     ("Templates/Tickets", lambda rel: rel.endswith(".md") and rel.count("/") == 2),
 ]
 # Project data that lives only in a vault. The repo ships examples of these instead.

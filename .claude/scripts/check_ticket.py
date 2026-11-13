@@ -52,9 +52,25 @@ SECTION6_BANNED = re.compile(r"out of scope|proposed|child and parent|reorgani|c
 STORY = re.compile(r"^\*As an? .+, I want to .+, so that .+\.\*$")
 
 
-def read_template(kind):
-    with open(os.path.join(TEMPLATE_DIR, kind + ".md"), encoding="utf-8") as fh:
+LEGACY_DIR = os.path.join(HERE, "legacy_templates")
+
+
+def read_template(kind, legacy=False):
+    folder = LEGACY_DIR if legacy else TEMPLATE_DIR
+    with open(os.path.join(folder, kind + ".md"), encoding="utf-8") as fh:
         return fh.read()
+
+
+def is_legacy(text, kind):
+    """True for a draft in the old template: a standard ticket with an old heading (Expected behaviour,
+    Acceptance criteria, Potential impacts) but no Requirements heading, or an epic without the Design references section."""
+    if kind == "standard":
+        heads = bold_headings(text)
+        old = {"Expected behaviour", "Acceptance criteria", "Potential impacts"}
+        return bool(old & set(heads)) and "Requirements" not in heads
+    if kind == "epic":
+        return not re.search(r"^## (?:6\.\s*Design references|7\.\s*What we know|8\.\s*Readiness summary)", text, re.M)
+    return False
 
 
 def bold_headings(text):
@@ -93,7 +109,7 @@ def common_checks(text, team, kind="standard"):
     elif kind == "design" and team != TEAMS[1]:
         found.append("design tickets belong to the %s team, got '%s'" % (TEAMS[1], team))
     if re.search(r"\[[^\]]*\]", strip_allowed_brackets(text)):
-        found.append("square brackets remain; replace placeholders with real content or N/A")
+        found.append("square brackets remain; replace placeholders with real content, N/A or Nothing")
     for pattern, label in BANNED:
         if re.search(pattern, text, re.I if label == "an update line" else 0):
             found.append("contains %s" % label)
@@ -116,7 +132,7 @@ def check_title(title):
 
 def check_standard(text, kind="standard"):
     found = []
-    template = read_template(kind)
+    template = read_template(kind, legacy=(kind == "standard"))
     first = text.strip().splitlines()[0] if text.strip() else ""
     if not first.startswith("## "):
         found.append("first line must be the title as '## <title>'")
@@ -158,7 +174,8 @@ def check_standard(text, kind="standard"):
     if len(crit) < needed:
         found.append("acceptance criteria needs at least %d items, found %d" % (needed, len(crit)))
     joined = " ".join(crit).lower()
-    if "must not" not in joined:
+    template_wants_must_not = any("must not" in l.lower() for l in tbodies.get("Acceptance criteria", []))
+    if template_wants_must_not and "must not" not in joined:
         found.append("acceptance criteria needs an explicit 'Must NOT' exclusion")
     ctx = " ".join(l for l in bodies.get("Business context", []) if l.strip())
     sentences = [s for s in re.split(r"(?<=[.!?])\s+", ctx.strip()) if s]
@@ -174,6 +191,71 @@ def check_standard(text, kind="standard"):
     return found
 
 
+NONE_DATED = re.compile(r"^None as of \S.*$")
+
+
+def check_new_standard(text):
+    found = []
+    template = read_template("standard")
+    first = text.strip().splitlines()[0] if text.strip() else ""
+    if not first.startswith("## "):
+        found.append("first line must be the title as '## <title>'")
+    else:
+        found += check_title(first[3:].strip())
+    raw = bold_headings(template)
+    optional = set(h[len("[Optional] "):] for h in raw if h.startswith("[Optional] "))
+    want = [h[len("[Optional] "):] if h.startswith("[Optional] ") else h for h in raw]
+    have = bold_headings(text)
+    for h in want:
+        if h not in have and h not in optional:
+            found.append("missing heading: %s" % h)
+    extra = [h for h in have if h not in want]
+    if extra:
+        found.append("extra heading(s): %s" % ", ".join(extra))
+    present = [h for h in have if h in want]
+    if present != [h for h in want if h in present]:
+        found.append("headings are out of order")
+    bodies = section_bodies(text)
+    for h in optional:
+        if h in bodies and not any(l.strip() for l in bodies[h]):
+            found.append("%s section is empty; add its content or remove the section" % h)
+    ctx = " ".join(l for l in bodies.get("Business context", []) if l.strip())
+    sentences = [s for s in re.split(r"(?<=[.!?])\s+", ctx.strip()) if s]
+    if not 1 <= len(sentences) <= 3:
+        found.append("Business context must be 1-3 sentences, found %d" % len(sentences))
+    if DATED.search(ctx):
+        found.append("Business context holds a dated progress note; move it to a dated Linear comment")
+    reqs = [l for l in bodies.get("Requirements", []) if re.match(r"^- \[[ xX]\] \S", l)]
+    if len(reqs) < 2:
+        found.append("Requirements needs at least 2 items, found %d" % len(reqs))
+    if "Design" in bodies and not any(l.strip() for l in bodies["Design"]):
+        found.append("Design needs a link or 'None needed'")
+    dep = bodies.get("Dependencies", [])
+    waiting = ""
+    for label in ("Blocked by", "Waiting on"):
+        lines = [l for l in dep if l.startswith("- " + label + ":")]
+        if not lines:
+            found.append("Dependencies: add a '%s:' line (use Nothing if none)" % label)
+            continue
+        value = lines[0].split(":", 1)[1].strip()
+        if not value:
+            found.append("Dependencies: '%s' needs a value or Nothing" % label)
+        if label == "Waiting on":
+            waiting = value
+    oq = [l[2:].strip() for l in bodies.get("Open questions", []) if l.startswith("- ")]
+    if not oq:
+        found.append("Open questions needs a real question or 'None as of <date>'")
+    for q in oq:
+        if q.startswith("None"):
+            if not NONE_DATED.match(q):
+                found.append("Open questions: write 'None as of <date>', not '%s'" % q)
+            elif waiting and not re.match(r"^(nothing|none|n/a)\b", waiting.strip().lower()):
+                found.append("Open questions says None while Waiting on lists an open decision; list the decision as a question or mark it clearly")
+        else:
+            found += check_open_question(q)
+    return found
+
+
 def check_open_question(q):
     found = []
     if q != "None" and not q.endswith("?"):
@@ -183,9 +265,40 @@ def check_open_question(q):
     return found
 
 
+def check_new_epic_sections(section):
+    found = []
+    if "6" in section:
+        body = [l for l in section["6"].splitlines()[1:] if l.strip()]
+        if not body:
+            found.append("Design references needs a link or 'None needed'")
+    if "7" in section:
+        for head in ("Decided", "Proposed"):
+            if not re.search(r"(?m)^###\s*" + head + r"\s*$", section["7"]):
+                found.append("What we know needs a '### %s' list" % head)
+        m = re.search(r"(?ms)^###\s*Decided\s*$(.*?)(?=^###|\Z)", section["7"])
+        if m and re.search(r"\bproposed\b|\bnot confirmed\b|\bunconfirmed\b", m.group(1), re.I):
+            found.append("Decided holds an item that reads as proposed; move it under Proposed")
+    if "8" in section:
+        lines = [l for l in section["8"].splitlines()[1:] if l.strip()]
+        if not lines or not re.match(r"(?i)^as of \S", lines[0].strip()):
+            found.append("Readiness summary must start with 'As of <date>'")
+    if "9" in section:
+        items = [l.strip()[2:].strip() for l in section["9"].splitlines()[1:] if l.strip().startswith("- ")]
+        if not items:
+            found.append("Open questions needs a real question or 'None as of <date>'")
+        for q in items:
+            if q.startswith("None"):
+                if not NONE_DATED.match(q):
+                    found.append("Open questions: write 'None as of <date>', not '%s'" % q)
+            else:
+                found += check_open_question(q)
+    return found
+
+
 def check_epic(text):
     found = []
-    template = read_template("epic")
+    legacy = is_legacy(text, "epic")
+    template = read_template("epic", legacy=legacy)
     heads = re.findall(r"^## (\d+)\.\s", text, re.M)
     t_heads = re.findall(r"^## (\d+)\.\s*(\[Optional\])?", template, re.M)
     for num, optional in t_heads:
@@ -221,16 +334,19 @@ def check_epic(text):
             found.append("section 5 needs an '**Acceptance Criteria**' list")
         if not re.search(r"must not|cannot|can't|can not|not be able|never", section["5"], re.I):
             found.append("section 5 needs an explicit exclusion (what the user or role must not do)")
-    if "6" in section:
-        for head in re.findall(r"(?m)^#{3,}\s*(.+?)\s*$", section["6"]):
+    extra_sec = "6" if legacy else "10"
+    if extra_sec in section:
+        for head in re.findall(r"(?m)^#{3,}\s*(.+?)\s*$", section[extra_sec]):
             if SECTION6_BANNED.search(head):
-                found.append("section 6 may not hold '%s': scope lists and ticket reorganisation proposals stay out of the ticket (future scope that is nice to have is allowed)" % head)
-        m = re.search(r"(?im)^(?:#+\s*|\*\*)Open questions\**\s*$([\s\S]*?)(?=^#|\Z)", section["6"])
+                found.append("section %s may not hold '%s': scope lists and ticket reorganisation proposals stay out of the ticket (future scope that is nice to have is allowed)" % (extra_sec, head))
+        m = re.search(r"(?im)^(?:#+\s*|\*\*)Open questions\**\s*$([\s\S]*?)(?=^#|\Z)", section[extra_sec])
         if m:
             for line in m.group(1).splitlines():
                 item = line.strip()
                 if item.startswith("- "):
                     found += check_open_question(item[2:].strip())
+    if not legacy:
+        found += check_new_epic_sections(section)
     return found
 
 
@@ -248,8 +364,38 @@ def ticket_ids(text):
 
 def check(text, kind, team):
     found = common_checks(text, team, kind)
-    found += check_epic(text) if kind == "epic" else check_standard(text, kind)
+    if kind == "epic":
+        found += check_epic(text)
+    elif kind == "standard" and not is_legacy(text, kind):
+        found += check_new_standard(text)
+    else:
+        found += check_standard(text, kind)
     return found
+
+
+JARGON = ["payload", "schema", "middleware", "refactor", "idempotent", "serialize", "deserialize", "regex", "cron", "latency", "database", "backend", "frontend", "api call", "microservice"]
+MAX_LINES = 45
+
+
+def wording_warnings(text):
+    """Plain-language warnings. Printed as WARN lines; they never change the exit status.
+    Lines that start with 'Endpoint:' are skipped, because API tickets may name endpoints."""
+    warnings = []
+    lines = [l for l in text.splitlines() if l.strip()]
+    if lines and not lines[0].startswith("## 1.") and len(lines) > MAX_LINES:
+        warnings.append("ticket is longer than one screen (%d lines); trim it or make it an epic" % len(lines))
+    body = "\n".join(l for l in lines if not l.lower().startswith("endpoint:"))
+    seen = []
+    for word in JARGON:
+        if re.search(r"\b" + re.escape(word) + r"\b", body, re.I) and word not in seen:
+            seen.append(word)
+    if seen:
+        warnings.append("technical wording: %s; say it from the user's point of view" % ", ".join(seen))
+    return warnings
+
+
+def kind_legacy(kind, text):
+    return kind in ("standard", "epic") and is_legacy(text, kind)
 
 
 def main():
@@ -266,6 +412,10 @@ def main():
     if not problems:
         print("OK: draft passes all template checks")
     ids = ticket_ids(text)
+    for w in wording_warnings(text):
+        print("WARN: " + w)
+    if kind_legacy(args.kind, text):
+        print("NOTE: this draft uses the old template; new tickets use the current one")
     if ids:
         print("CHECK: ticket IDs in this draft: %s. Confirm none is Done or QA (get_issue) and describe any finished work by name instead." % ", ".join(ids))
     sys.exit(1 if problems else 0)

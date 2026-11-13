@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 - 13 Nov 2026
+
+- New `/board-refresh` skill: the daily and on-demand board review. It checks blockers, status and wording against live Linear, walks the app as a user, reads the latest calls and writes a dated digest. Proposals only. `/morning-digest` is now an alias for it.
+- New `board-sweep.md`: the Todo rule (a ticket is Todo only when a developer can finish it with no blockers and it is definitely needed with final requirements) and board checks A to J. The `project-manager` agent and `/board-refresh` both use it.
+- New session check script (`session_check.py`), with tests: it lists the projects whose board review is due.
+- Set-up questions in `ticket-rules.md`: `/new-ticket`, `/update-ticket` and `/tickets-from-updates` ask for title, status, priority, labels, assignee and parent before drafting. The questions are optional and a blank answer is never guessed. If the PM asks for Todo against the Todo rule, the skill warns once, then follows the PM. After every save the skills read the ticket back and report what the tracker returned.
+- Design tickets default to the Linear "Design Template Example"; the long-form design template stays available on request.
+- The agent and skills say when Granola only covers the last 30 days, and state plainly when a later source corrects an earlier answer.
+- Tooling: the exporter now copies the legacy templates the ticket checker needs, and the linter knows the `AskUserQuestion` tool. `/board-refresh` and `/morning-digest` now pass the linter.
+- Tests: 120 script tests and 60 tooling tests.
+
 ## 0.1.3 - 3 Nov 2026
 
 - New ownership rule in `ticket-rules.md`: only tickets created by the PM may be edited, commented on, re-statused, linked or cancelled. Every skill and the `project-manager` agent read `createdBy` first, leave other people's tickets alone, and report conflicts to the PM, whose own ticket gives way.

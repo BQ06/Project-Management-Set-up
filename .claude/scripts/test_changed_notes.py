@@ -74,6 +74,12 @@ class ChangedNotesTests(unittest.TestCase):
         self.write("Proj/Ticket Digests/2026-10-23.md", "digest")
         self.assertEqual(self.run_cn(), [])
 
+    def test_product_walks_folder_is_ignored(self):
+        os.makedirs(os.path.join(self.root, "Proj", "Product Walks"))
+        cn.record(self.root, "Proj", self.state, self.map)
+        self.write("Proj/Product Walks/2026-11-06.md", "walk")
+        self.assertEqual(self.run_cn(), [])
+
     def test_sensitive_paths_and_names_are_ignored(self):
         cn.record(self.root, "Proj", self.state, self.map)
         self.write("Proj/Secrets Note.md", "x")

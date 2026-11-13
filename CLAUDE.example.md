@@ -30,5 +30,5 @@ Copy this file to `CLAUDE.md` in your vault root and edit the project list.
 - `/scope-project`: scope and phase a project (new or re-plan) and write `<Project>/Scope and Phasing.md` after approval. Only this skill sets phase labels.
 - `/roadmap`: build or refresh the project's visual roadmap artifact (private).
 - `/wireframe-prompt`: write a wireframing prompt for one area, then build the wireframes after approval.
-- `/morning-digest`: write proposed ticket updates from recent meetings into `<Project>/Ticket Digests/`. Proposals only.
+- `/board-refresh`: the daily and on-demand board review. It checks blockers, status and wording against live Linear, walks the app as a user, reads the latest calls and writes `<Project>/Ticket Digests/`. Proposals only. `/morning-digest` is its old name and still works.
 - `/intake`: interview the PM about a project or topic, collect documents and context, and write `<Project>/Intake - <Topic> (date).md` after approval. It never touches tickets.

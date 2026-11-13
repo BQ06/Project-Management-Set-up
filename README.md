@@ -4,7 +4,7 @@ Repo housing all skills and agents used for Product Ownership/Management purpose
 
 ## Project-management agent and skills for Claude Code
 
-A read-only project-manager agent and eight skills that turn your project notes, Linear tickets, Granola calls and Slack into accurate, reviewed tickets, plans and digests. Everything that writes (a ticket, a note, a published page) shows you the full result first and waits for a clear yes. Tickets in Done or QA are never touched.
+A read-only project-manager agent and nine skills that turn your project notes, Linear tickets, Granola calls and Slack into accurate, reviewed tickets, plans and digests. Everything that writes (a ticket, a note, a published page) shows you the full result first and waits for a clear yes. Tickets in Done or QA are never touched.
 
 This repo holds the agents and skills only. It does not hold any project notes, credentials or client data: those stay in your own vault.
 
@@ -13,11 +13,11 @@ This repo holds the agents and skills only. It does not hold any project notes, 
 | | |
 |---|---|
 | Agent | `project-manager`: read-only status, gap and conflict checks |
-| Skills | `/new-ticket`, `/update-ticket`, `/tickets-from-updates`, `/morning-digest`, `/intake`, `/scope-project`, `/roadmap`, `/wireframe-prompt` |
+| Skills | `/new-ticket`, `/update-ticket`, `/tickets-from-updates`, `/board-refresh` (`/morning-digest` is its old name), `/intake`, `/scope-project`, `/roadmap`, `/wireframe-prompt` |
 | Rules | `ticket-rules.md` (every ticket rule and standing ruling), `vault-update-rules.md` |
 | Templates | standard, epic and design ticket templates, enforced by the ticket checker |
 | Config | `pm-config.json` (your Linear team keys), `project-map.md` (your projects), `settings.local.json` (permissions) |
-| Scripts | the ticket checker, the changed-notes finder and the digest window, with 76 tests |
+| Scripts | the ticket checker, the changed-notes finder, the digest window and the session check, with 120 tests |
 | Starter notes | `starter/ExampleProject/`: an Overview, Scope Boundaries and Open Questions note to copy for a first project |
 | Tools | installer, setup checker (`doctor`), skills linter, secret scanner, vault exporter, MCP name rewriter, with 60 tests |
 

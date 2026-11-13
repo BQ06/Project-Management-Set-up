@@ -23,7 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 DEFAULT_MAP = os.path.join(HERE, "..", "project-map.md")
 DEFAULT_STATE = os.path.join(HERE, "..", "state", "last-processed.json")
-DIGEST_DIR = "Ticket Digests"
+DIGEST_DIRS = ("Ticket Digests", "Product Walks")
 SENSITIVE_NAME = re.compile(r"credential|password|login|api key|secret|token", re.I)
 
 
@@ -47,7 +47,7 @@ def sensitive_paths(map_file):
 
 def excluded(rel, sensitive):
     parts = rel.split("/")
-    if DIGEST_DIR in parts[:-1] or not rel.endswith(".md"):
+    if any(d in parts[:-1] for d in DIGEST_DIRS) or not rel.endswith(".md"):
         return True
     if os.path.basename(rel) == "CLAUDE.md":
         return True  # folder config, not project context
